@@ -60,3 +60,38 @@ resource "azurerm_subnet_network_security_group_association" "nsg_subnet_associa
   network_security_group_id = azurerm_network_security_group.nsg.id
 
 }
+
+# UDR
+# Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/route_table
+
+resource "azurerm_route_table" "udr" {
+
+  count = var.deploy_route_table ? 1 : 0
+
+  name                          = var.subnet_route_table_name
+  location                      = var.subnet_location
+  resource_group_name           = var.subnet_rg_name
+  disable_bgp_route_propagation = false
+  tags                          = var.subnet_nsg_tags
+
+  dynamic "route" {
+    for_each = var.subnet_routes
+    content {
+      name                   = route.key
+      address_prefix         = route.value.address_prefix
+      next_hop_type          = route.value.next_hop_type   
+      next_hop_in_ip_address = route.value.next_hop_in_ip_address
+    }
+  }
+}
+
+# UDR and Subnet association
+# Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_route_table_association
+
+resource "azurerm_subnet_route_table_association" "udr_subnet_association" {
+
+  count = var.deploy_route_table ? 1 : 0
+
+  subnet_id      = azurerm_subnet.subnet.id
+  route_table_id = azurerm_route_table.udr[0].id
+}
