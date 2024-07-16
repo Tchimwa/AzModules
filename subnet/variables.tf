@@ -48,7 +48,7 @@ variable "subnet_delegations" {
 variable "private_endpoint_network_policies" {
   description = "Network Polictions to apply on the Private Endpoints hosted on the subnet"
   type        = string
-  default     = "NetworkSecurityGroupEnabled, RouteTableEnabled"
+  default     = "NetworkSecurityGroupEnabled"
 }
 
 variable "subnet_nsg_security_rules" {
@@ -72,12 +72,29 @@ variable "subnet_nsg_security_rules" {
 # Needs to be discuss with Arun as tags vary from what we see from the portal
 variable "subnet_nsg_tags" {
   type = object({
-    Environment        = string
-    "Project Code"     = string
-    BLISSNo            = string
-    "Application Name" = string
-    "Allocation Basis" = string
-    "Tranche Workload" = string
+    Environment     = string
+    ApplicationName = string
+    Region          = string
   })
+}
+
+variable "deploy_route_table" {
+  type        = bool
+  default     = false
+  description = "Deploying the UDR on the subnet"
+
+}
+
+variable "subnet_route_table_name" {
+  type        = string
+  description = "UDR Name"
+}
+
+variable "subnet_routes" {
+  type = map(object({
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = optional (string)
+  }))
 }
 
