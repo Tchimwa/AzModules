@@ -34,6 +34,46 @@ resource "azurerm_virtual_hub_connection" "vnet_connection" {
 
 }
 
+# Virtual Network Peering
+# Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering
+
+resource "azurerm_virtual_network_peering" "peering" {
+
+  count = var.vnet_link_to_vhub ? 0 : 1
+
+  name                      = "${azurerm_virtual_network.vnet.name}-to-${var.remote_hub_vnet_name}"
+  resource_group_name       = azurerm_virtual_network.vnet.resource_group_name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = var.remote_hub_vnet_id
+
+  allow_forwarded_traffic = true
+  allow_gateway_transit   = false
+  use_remote_gateways     = true
+
+  triggers = {
+    remote_address_space = join(",", var.remote_hub_vnet_address_space)
+  }
+}
+
+resource "azurerm_virtual_network_peering" "remote-hub-peering" {
+
+  count = var.vnet_link_to_vhub ? 0 : 1
+
+  name                      = "${var.remote_hub_vnet_name}-to-${azurerm_virtual_network.vnet.name}"
+  resource_group_name       = var.remote_hub_vnet_rg_name
+  virtual_network_name      = var.remote_hub_vnet_name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+  provider                  = azurerm.remote_hub_vnet_subscription
+
+  allow_forwarded_traffic = true
+  allow_gateway_transit   = true
+  use_remote_gateways     = false
+
+  triggers = {
+    remote_address_space = join(",", azurerm_virtual_network.vnet.address_space)
+  }
+}
+
 # Private DNS zone virtual link if needed
 # Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone_virtual_network_link
 
