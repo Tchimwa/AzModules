@@ -1,100 +1,83 @@
-variable "subnet_name" {
-  description = "Subnet name"
+variable "vnet_name" {
   type        = string
+  description = "Name of the global vnet"
 }
 
-variable "subnet_vnet_name" {
-  description = "virtual network name hosting the subnet"
+variable "vnet_vhub_id" {
   type        = string
+  description = "ID of the global vhub"
+  default     = null
 }
 
-variable "subnet_address_prefixes" {
-  description = "Address Prefixes allocated to the subnet"
+variable "vnet_rg_name" {
+  type        = string
+  description = "Name of the the RG hosting the global vnet"
+}
+
+variable "vnet_address_space" {
   type        = list(string)
+  description = "Address space of the global vnet"
 }
 
-variable "subnet_rg_name"{
-  description = "Resource group name hosting the subnet"
+variable "vnet_location" {
   type        = string
+  description = "Location of the global vnet"
 }
 
-variable "subnet_location" {
-  description = "Virtual Network location"
-  type        = string
+variable "vnet_link_to_vhub" {
+  type        = bool
+  description = "Need to link the vnet to the vHUB"
+  default     = true
 }
 
-variable "subnet_nsg_name"{
-  description = "Name of the NSG associated to the subnet"
-  type        = string
+variable "private_dnszones" {
+  type = map(object({
+    private_dnszone_name    = string
+    private_dnszone_rg_name = string
+  }))
+  default = {}
 }
 
-variable "subnet_service_endpoints" {
-  description = "Service endpoints to associate with the subnet"
-  type        = set(string)
+variable "vnet_dns_servers" {
+  type        = list(string)
+  description = "List of custom DNS servers attached to the VNET"
   default     = []
 }
 
-variable "subnet_delegations" {
-  description = "Map of the services delegated to this subnet"
-  default     = {}
-
-  type  = map(object({
-    name         = string
-    service_name = string
-    actions      = list(string)
-  }))
+variable "vnet_ddos_protection_plan" {
+  type = object({    
+    id     = string
+    enable = bool
+  })
+  default     = null
+  description = "VNET DDoS protection Plan"
 }
 
-variable "private_endpoint_network_policies" {
-  description = "Network Polictions to apply on the Private Endpoints hosted on the subnet"
+variable "remote_hub_vnet_name" {
   type        = string
-  default     = "NetworkSecurityGroupEnabled"
+  description = "Remote VNET name to peer"
 }
 
-variable "subnet_nsg_security_rules" {
-  type = map(object({
-    name                         = string
-    priority                     = number
-    direction                    = string
-    access                       = string
-    protocol                     = string
-    source_port_range            = string
-    destination_port_range       = string
-    source_address_prefix        = optional(string)
-    source_address_prefixes      = optional(list(string))
-    destination_address_prefix   = optional(string)
-    destination_address_prefixes = optional(list(string))
-  }))
-  default = {}
-  description = "Map of the NSG rules to implement on the subnet"
+variable "remote_hub_vnet_rg_name" {
+  type        = string
+  description = "Resource Group hosting the remote VNET"
+}
+
+variable "remote_hub_vnet_id" {
+  type        = string
+  description = "Remote VNET ID"
+} 
+
+variable "remote_hub_vnet_address_space" {
+  type        = list(string)
+  description = "Address Space of the remote VNET"
 }
 
 # Needs to be discuss with Arun as tags vary from what we see from the portal
-variable "subnet_nsg_tags" {
+variable "vnet_tags" {
   type = object({
-    Environment     = string
-    ApplicationName = string
-    Region          = string
+    Environment      = string
+    ApplicationName  = string
+    Region           = string
   })
 }
-
-variable "deploy_route_table" {
-  type        = bool
-  default     = false
-  description = "Deploying the UDR on the subnet"
-
-}
-
-variable "subnet_route_table_name" {
-  type        = string
-  description = "UDR Name"
-}
-
-variable "subnet_routes" {
-  type = map(object({
-    address_prefix         = string
-    next_hop_type          = string
-    next_hop_in_ip_address = optional (string)
-  }))
-}
-
