@@ -25,6 +25,7 @@ resource "azurerm_key_vault" "keyvault" {
 }
 
 # Private endpoint
+# Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint
 
 resource "azurerm_private_endpoint" "private_endpoint" {
 
