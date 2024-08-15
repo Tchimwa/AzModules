@@ -31,13 +31,24 @@ variable "keyvault_enable_rbac_authorization" {
 }
 
 variable "keyvault_soft_delete_retention_days" {
-  type        = string
+  type        = number
   description = "Keyvault soft delete retention days"
+  default     = 7
 }
 
 variable "tenant_id" {
   type        = string
   description = "Tenant ID"
+}
+
+variable "keyvault_roles" {
+  type = map(object({
+    role_definition_name = string,
+    role_definition_id   = string,
+    principal_id         = string
+  }))
+  default     = {}
+  description = "RBAC roles to assign to keyvault"
 }
 
 ## Networking #####################################################################################

@@ -24,6 +24,20 @@ resource "azurerm_key_vault" "keyvault" {
 
 }
 
+# Keyvault
+# Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
+
+resource "azurerm_role_assignment" "role_assignment_keyvault" {
+
+  for_each = var.keyvault_roles
+
+  scope                = azurerm_key_vault.keyvault.id
+  role_definition_name = each.value.role_definition_name
+  role_definition_id   = each.value.role_definition_id
+  principal_id         = each.value.principal_id
+
+}
+
 # Private endpoint
 # Reference: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint
 
