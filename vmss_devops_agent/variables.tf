@@ -73,49 +73,4 @@ variable "devops_token" {
 variable "devops_agent_pool_name" {
     description = "Azure devOps agent pool name"
     type        = string
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ]]]]]]]]]]
 }
