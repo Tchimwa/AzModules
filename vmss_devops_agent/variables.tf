@@ -13,6 +13,11 @@ variable "vmss_name" {
   type        = string
 }
 
+variable "vmss_sku" {
+  description = "The SKU of the Virtual Machine Scale Set"
+  type        = string
+}
+
 variable "instance_count" {
   description = "The number of instances in the VMSS"
   type        = number
@@ -55,6 +60,11 @@ variable "backend_port" {
   description = "The backend port for the Internal Load Balancer"
   type        = number
   default     = 80
+}
+
+variable "deploy_ilb" {
+  description = "If Yes, a load balancer will be deployed"
+  default     = false
 }
 
 # Devops agent
