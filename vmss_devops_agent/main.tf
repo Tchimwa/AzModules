@@ -1,7 +1,7 @@
 # Create Internal Load Balancer
 resource "azurerm_lb" "ilb" {
 
-  count = deploy_ilb : 1 : 0
+  count = deploy_ilb ? 1 : 0
 
   name                = var.load_balancer_name
   location            = data.azurerm_resource_group.rg.location
@@ -18,7 +18,7 @@ resource "azurerm_lb" "ilb" {
 # Backend Pool for Load Balancer
 resource "azurerm_lb_backend_address_pool" "bepool" {
 
-  count = deploy_ilb : 1 : 0
+  count = deploy_ilb ? 1 : 0
 
   loadbalancer_id = azurerm_lb.ilb[0].id
   name            = "${var.load_balancer_name}-backend-pool"
@@ -27,7 +27,7 @@ resource "azurerm_lb_backend_address_pool" "bepool" {
 # Health Probe
 resource "azurerm_lb_probe" "http_probe" {
 
-  count = deploy_ilb : 1 : 0
+  count = deploy_ilb ? 1 : 0
 
   name                = "http_probe"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -40,7 +40,7 @@ resource "azurerm_lb_probe" "http_probe" {
 # Load Balancer Rule
 resource "azurerm_lb_rule" "lbrule" {
 
-  count = deploy_ilb : 1 : 0
+  count = deploy_ilb ? 1 : 0
 
   resource_group_name            = data.azurerm_resource_group.rg.name
   loadbalancer_id                = azurerm_lb.ilb[0].id
