@@ -1,9 +1,27 @@
-$url = "https://vstsagentpackage.azureedge.net/agent/2.189.0/vsts-agent-win-x64-2.189.0.zip"
-$agent_dir = "C:\azagent"
+# Variables
+$organizationUrl = "${organization_url}"
+$patToken = "${pat_token}"
+$agentPool = "Default"  # Change to your desired agent pool
 
-mkdir $agent_dir
-Invoke-WebRequest -Uri $url -OutFile "$agent_dir\vsts-agent.zip"
-Expand-Archive "$agent_dir\vsts-agent.zip" -DestinationPath $agent_dir
-cd $agent_dir
+# Download the Azure DevOps agent
+$agentDownloadUrl = "https://vstsagentpackage.azureedge.net/agent/2.189.0/vsts-agent-win-x64-2.189.0.zip"
+$agentDir = "C:\azagent"
+New-Item -ItemType Directory -Path $agentDir
 
-./config.cmd --unattended --url $(devops_url) --auth PAT --token $(devops_token) --pool $(devops_agent_pool_name) --agent $(hostname) --acceptTeeEula --runAsService
+Write-Output "Downloading Azure DevOps agent..."
+Invoke-WebRequest -Uri $agentDownloadUrl -OutFile "$agentDir\vsts-agent.zip"
+
+# Extract the agent
+Expand-Archive "$agentDir\vsts-agent.zip" -DestinationPath $agentDir
+Set-Location -Path $agentDir
+
+# Configure the agent
+Write-Output "Configuring Azure DevOps agent..."
+Start-Process ".\config.cmd" -ArgumentList "--unattended --url $organizationUrl --auth PAT --token $patToken --pool $agentPool --agent $(hostname) --acceptTeeEula --runAsService" -Wait
+
+# Install the agent service
+Write-Output "Installing and starting the agent service..."
+Start-Process ".\svc.sh install" -Wait
+Start-Process ".\svc.sh start" -Wait
+
+Write-Output "Azure DevOps agent installation and configuration completed."
